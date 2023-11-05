@@ -1,49 +1,128 @@
-#include<stdio.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-#define MAX 50
-#define MAX_CHARS 16
-char QUEUE[MAX_CHARS][MAX];
-int rear, front;
+const int MAX = 50;
 
-void enqueue(char item[]) {
-    if(rear == MAX - 1) {
-        return;
-    }
+typedef struct node {
+    char value;
+    struct node *prev;
+} *stack;
 
-    if(front == -1)
-        front = 0;
-
-    rear++;
-    strcpy(QUEUE[rear], item);
+stack createNode(char x) {
+    stack newNode;
+    newNode = (stack) malloc(sizeof(struct node));
+    newNode->value = x;
+    newNode->prev = NULL;
+    return (newNode);
 }
 
-void dequeue() {
-    if(rear == -1) {
-        return;
-    }
+bool isBracket(char bracket) {
+    if (bracket=='('||bracket==')'||bracket=='['||bracket==']'||bracket=='{'||bracket=='}')
+        return true;
+    else return false;
+}
 
-    if(front == rear)
-        front = rear = -1;
+int size(stack top) {
+    int count = 0;
+    stack cursor;
+    cursor = top;
+    while (cursor != NULL) {
+        count++;
+        cursor = cursor->prev;
+    }
+    return count;
+}
+
+bool isFull(stack top) {
+    return (size(top) >= MAX);
+}
+
+bool isEmpty(stack top) {
+    return (top == NULL);
+}
+
+void push(stack *top, char x) {
+    if (isFull(*top))
+        printf("Karakter melebihi batas!\n");
     else {
-        for(int i = 0; i < rear; i++) {
-            strcpy(QUEUE[i], QUEUE[i + 1]);
-        }
-        rear--;
-        front = 0;
+        stack temp = createNode(x);
+        temp->prev = *top;
+        *top = temp;
     }
 }
 
-void reverseWord(char word[]) {
+stack pop(stack top) {
+    if (isEmpty(top))
+        return NULL;
+    else {
+        stack temp = top;
+        top = top->prev;
+        temp->prev = NULL;
+        free(temp);
+        return top;
+    }
+}
 
+void dispose(stack *top) {
+    while (!isEmpty(*top)) {
+        *top=pop(*top);
+    }
 }
 
 int main() {
-    rear=-1; front=-1;
-    char word[MAX];
+    stack top;
+    char bracket[100], chara;
+    bool showOutput;
 
-    printf("N: ");
-    scanf("%s", &word);
-    reverseWord(word);
-    return 0;
+    do {
+        showOutput=true;
+        top=NULL;
+
+        printf("Program Tanda Kurung Seimbang (input 00 untuk berhenti)\n");
+        printf("  Input: ");
+        scanf("%s", &bracket);
+
+        int i = 0;
+        while (bracket[i] != '\0') {
+            chara = bracket[i];
+            if (!isBracket(chara)){
+                printf("Input harus berupa tanda kurung!");
+                showOutput=false;
+                break;
+            }
+
+            if (isEmpty(top))
+                push(&top, chara);
+            else if (chara=='('||chara=='['||chara=='{')
+                push(&top, chara);
+            else {
+                switch (chara) {
+                    case ')':
+                        if (top->value=='(')
+                            top= pop(top);
+                        break;
+                    case ']':
+                        if (top->value=='[')
+                            top= pop(top);
+                        break;
+                    case '}':
+                        if (top->value=='{')
+                            top= pop(top);
+                        break;
+                }
+            }
+            i++;
+        }
+
+        if (showOutput) {
+            if (isEmpty(top))
+                printf("Benar");
+            else
+                printf("Salah");
+        }
+        dispose(&top);
+        printf("\n\n");
+    } while (strcmp(bracket, "00")!=0);
 }

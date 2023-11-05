@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-int MAX=50;
+const int MAX=50;
 
 typedef struct node {
     int value;
@@ -50,9 +50,10 @@ stack pop(stack top) {
     if (isEmpty(top))
         return NULL;
     else {
-        stack temp = top->prev;
-        top->prev = NULL;
-        top = temp;
+        stack temp = top;
+        top=top->prev;
+        temp->prev = NULL;
+        free(temp);
         return top;
     }
 }
