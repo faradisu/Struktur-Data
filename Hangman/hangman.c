@@ -6,8 +6,6 @@
 #include <stdbool.h>
 
 #define MAX_LEN 100
-#define MAX_STAGE 7
-int numWords = 0;
 
 typedef struct node {
     char value;
@@ -73,7 +71,7 @@ int isLetterInWord(char guessLetter, ptrnode *wordToGuess, char guessedWord[]) {
 
             letterExist = 1;
             del = temp;
-            if (temp->prev == NULL && temp->next == NULL) {
+            if (temp->prev == NULL&&temp->next == NULL) {
                 newHead = NULL;
                 break;
             }
@@ -110,19 +108,26 @@ int isLetterInWord(char guessLetter, ptrnode *wordToGuess, char guessedWord[]) {
     return 0;
 }
 
-void showList(ptrnode head) {
-    ptrnode cursor;
-    cursor = head;
-    while (cursor != NULL) {
-        printf("%c ", cursor->value);
-        cursor = cursor->next;
-    }
-}
-
 void displayWord(int size, char guessedWord[]) {
     for (int i = 0; i < size; ++i) {
         printf("%c ", guessedWord[i]);
     }
+}
+
+ptrnode dispose(ptrnode head) {
+    ptrnode cursor, temp;
+    if (head != NULL) {
+        cursor = head;
+        while (cursor != NULL) {
+            temp = cursor->next;
+            free(cursor);
+            cursor = temp;
+        }
+
+    }
+
+    head = NULL;
+    return head;
 }
 
 void printBody(int life) {
@@ -205,6 +210,7 @@ int main() {
     char guessLetter;
     FILE *file;
 
+    system("cls");
     do {
         printf("PILIH KATEGORI\n");
         printf("1. Hewan\n");
@@ -236,11 +242,12 @@ int main() {
             case 6:
                 endProgram = true;
                 break;
-            default:{
+            default: {
                 printf("Input Error!\n");
                 continue;
             }
         }
+        system("cls");
 
         if (file == NULL) {
             perror("Error opening file\n");
@@ -259,8 +266,8 @@ int main() {
                 guessedWord[i] = '_';
             }
 
-            printf("STAGE-%d\n", stage);
             do {
+                printf("STAGE-%d\n", stage);
                 printBody(life);
                 displayWord(size, guessedWord);
 
@@ -268,21 +275,27 @@ int main() {
                     printf("\nMasukkan huruf: ");
                     scanf(" %c", &guessLetter);
                     guessLetter = toupper(guessLetter);
-                } while (guessLetter < 65 || guessLetter > 90);
+                } while (guessLetter < 65||guessLetter > 90);
 
                 if (guessedLetters[(int) guessLetter - 65] == 1) {
+                    system("cls");
                     printf("huruf telah dipilih sebelumnya\n\n");
                     continue;
                 } else {
+                    system("cls");
                     guessedLetters[(int) guessLetter - 65] = true;
-                    if (!isLetterInWord(guessLetter, &wordToGuess, guessedWord))
+                    if (!isLetterInWord(guessLetter, &wordToGuess, guessedWord)) {
+                        printf("Huruf %c tidak ada\n\n", guessLetter);
                         life--;
+                    } else
+                        printf("Huruf %c ada\n\n", guessLetter);
                 }
 
                 if (wordToGuess == NULL) {
+                    system("cls");
                     memset(guessedLetters, 0, sizeof(guessedLetters));
                     printf("\nKata berhasil ditebak!\n");
-                    printf("Kata  : %s\n\n", guessedWord);
+                    printf("Kata  : %s\n\n", randomWord);
                     if (life != 6)
                         life++;
                     stage++;
@@ -292,7 +305,8 @@ int main() {
 
             if (life == 0) {
                 printBody(life);
-                printf("Kamu kalah\n\n");
+                printf("Kamu kalah\n");
+                printf("Kata  : %s\n\n", randomWord);
                 break;
             }
             if (stage > 7) {
@@ -300,6 +314,7 @@ int main() {
                 break;
             }
         }
+        wordToGuess = dispose(wordToGuess);
         fclose(file);
         memset(guessedLetters, 0, sizeof(guessedLetters));
     } while (!endProgram);
