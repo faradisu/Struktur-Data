@@ -203,6 +203,14 @@ void printBody(int life) {
 }
 
 int main() {
+    system("cls");
+    printf("Welcome To Hangman Game\n");
+    printf("Aturan :\n");
+    printf("1. Kamu menang setelah menebak kata ke-7\n");
+    printf("2. Setiap kali kamu menebak kata, kami memberi tambahan 1 nyawa\n");
+    printf("3. Kamu memiliki 6 nyawa diawal game\n");
+    printf("Enjoy\n\n\n");
+
     ptrnode wordToGuess = NULL;
     int size, life, category, stage;
     int guessedLetters[26], endProgram;
@@ -210,7 +218,6 @@ int main() {
     char guessLetter;
     FILE *file;
 
-    system("cls");
     do {
         printf("PILIH KATEGORI\n");
         printf("1. Hewan\n");
