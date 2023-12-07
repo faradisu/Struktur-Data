@@ -114,10 +114,10 @@ void displayWord(int size, char guessedWord[]) {
     }
 }
 
-ptrnode dispose(ptrnode head) {
+ptrnode dispose(ptrnode wordToGuess) {
     ptrnode cursor, temp;
-    if (head != NULL) {
-        cursor = head;
+    if (wordToGuess != NULL) {
+        cursor = wordToGuess;
         while (cursor != NULL) {
             temp = cursor->next;
             free(cursor);
@@ -126,8 +126,8 @@ ptrnode dispose(ptrnode head) {
 
     }
 
-    head = NULL;
-    return head;
+    wordToGuess = NULL;
+    return wordToGuess;
 }
 
 void printBody(int life) {
